@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "PagerClient (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "PagerClient (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

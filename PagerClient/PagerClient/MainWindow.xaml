@@ -1,0 +1,38 @@
+<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+<!-- Licensed under the MIT License. -->
+
+<Window
+    x:Class="PagerClient.MainWindow"
+    x:Name="MainPagerWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:PagerClient"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Name="mainGrid">
+        <Grid x:Name="PagerAppTitleBar"
+              Canvas.ZIndex="1"
+              Height="30"
+              IsHitTestVisible="True"
+              VerticalAlignment="Top">
+            <Image Source="/Assets/WindowIcon.ico"
+                   HorizontalAlignment="Left"
+                   Width="16"
+                   Height="16" />
+            <TextBlock x:Name="AppTitleBarText"
+                       VerticalAlignment="Center"
+                       TextWrapping="NoWrap"
+                       Text="Pager Client"
+                       Style="{StaticResource CaptionTextBlockStyle}"
+                       Margin="50,0,0,0"/>
+        </Grid>
+
+        <Grid>
+            <TextBlock FontSize="30" Margin="50">
+                Welcome to PagerSender
+            </TextBlock>
+        </Grid>
+    </Grid>
+</Window>
