@@ -1,0 +1,12 @@
+Output: NC Drill Files
+Type  : NC Drill
+From  : Project [LoRa Pager.PrjPcb]
+   Generated File[pagerboardv1.TXT]
+   Generated File[pagerboardv1.LDP]
+   Generated File[pagerboardv1.DRR]
+
+
+Files Generated   : 3
+Documents Printed : 0
+
+Finished Output Generation At 02:35:22 On 08/04/2023

@@ -1,0 +1,73 @@
+Protel Design System Design Rule Check
+PCB File : C:\Users\Public\Documents\Altium\LoRa Pager\pagerv2.PcbDoc
+Date     : 06/04/2023
+Time     : 13:29:42
+
+Processing Rule : Clearance Constraint (Gap=10mil) (All),(All)
+Rule Violations :0
+
+Processing Rule : Short-Circuit Constraint (Allowed=No) (All),(All)
+Rule Violations :0
+
+Processing Rule : Un-Routed Net Constraint ( (All) )
+   Violation between Un-Routed Net Constraint: Net GND Between Pad SWENTER-2(7091.417mil,3951.496mil) on Top Layer And Pad LED-1(8365mil,3796.181mil) on Top Layer 
+   Violation between Un-Routed Net Constraint: Net GND Between Pad LED-1(8365mil,3796.181mil) on Top Layer And Pad SWPOWER-1(9451.417mil,3638.504mil) on Top Layer 
+   Violation between Un-Routed Net Constraint: Net NetLED_2 Between Pad U1-J2-7(2630mil,2875mil) on Multi-Layer And Pad LED-2(8365mil,3943.819mil) on Top Layer 
+   Violation between Un-Routed Net Constraint: Net GND Between Pad PowerInputs-1(9045mil,3180mil) on Multi-Layer And Pad SWPOWER-1(9451.417mil,3638.504mil) on Top Layer 
+   Violation between Un-Routed Net Constraint: Net 3.3 Between Pad U1-J2-1(2630mil,3475mil) on Multi-Layer And Pad PowerInputs-2(8945mil,3180mil) on Multi-Layer 
+   Violation between Un-Routed Net Constraint: Net NetSWENTER_1 Between Pad SWENTER-1(7091.417mil,3638.504mil) on Top Layer And Pad SWRIGHT-2(7901.417mil,3951.496mil) on Top Layer 
+   Violation between Un-Routed Net Constraint: Net GND Between Pad U1-J3-1(3630mil,3475mil) on Multi-Layer And Pad SWENTER-2(7091.417mil,3951.496mil) on Top Layer 
+   Violation between Un-Routed Net Constraint: Net NetSWENTER_3 Between Pad SWENTER-3(7268.583mil,3638.504mil) on Top Layer And Pad SWENTER-4(7268.583mil,3951.496mil) on Top Layer 
+   Violation between Un-Routed Net Constraint: Net NetSWENTER_3 Between Pad U1-J2-11(2630mil,2475mil) on Multi-Layer And Pad SWENTER-3(7268.583mil,3638.504mil) on Top Layer 
+   Violation between Un-Routed Net Constraint: Net NetSWLEFT_1 Between Pad SWLEFT-1(8591.417mil,3638.504mil) on Top Layer And Pad SWPOWER-2(9451.417mil,3951.496mil) on Top Layer 
+   Violation between Un-Routed Net Constraint: Net NetSWLEFT_2 Between Pad SWRIGHT-1(7901.417mil,3638.504mil) on Top Layer And Pad SWLEFT-2(8591.417mil,3951.496mil) on Top Layer 
+   Violation between Un-Routed Net Constraint: Net NetSWLEFT_3 Between Pad SWLEFT-3(8768.583mil,3638.504mil) on Top Layer And Pad SWLEFT-4(8768.583mil,3951.496mil) on Top Layer 
+   Violation between Un-Routed Net Constraint: Net NetSWLEFT_3 Between Pad U1-J2-9(2630mil,2675mil) on Multi-Layer And Pad SWLEFT-3(8768.583mil,3638.504mil) on Top Layer 
+   Violation between Un-Routed Net Constraint: Net GND Between Pad SWPOWER-1(9451.417mil,3638.504mil) on Top Layer And Pad SWRETURN-1(10386.417mil,3638.504mil) on Top Layer 
+   Violation between Un-Routed Net Constraint: Net NetSWPOWER_3 Between Pad SWPOWER-3(9628.583mil,3638.504mil) on Top Layer And Pad SWPOWER-4(9628.583mil,3951.496mil) on Top Layer 
+   Violation between Un-Routed Net Constraint: Net NetSWPOWER_3 Between Pad U1-J2-8(2630mil,2775mil) on Multi-Layer And Pad SWPOWER-3(9628.583mil,3638.504mil) on Top Layer 
+   Violation between Un-Routed Net Constraint: Net GND Between Pad SWRETURN-1(10386.417mil,3638.504mil) on Top Layer And Pad SWRETURN-2(10386.417mil,3951.496mil) on Top Layer 
+   Violation between Un-Routed Net Constraint: Net NetSWRETURN_3 Between Pad SWRETURN-3(10563.583mil,3638.504mil) on Top Layer And Pad SWRETURN-4(10563.583mil,3951.496mil) on Top Layer 
+   Violation between Un-Routed Net Constraint: Net NetSWRETURN_3 Between Pad U1-J2-10(2630mil,2575mil) on Multi-Layer And Pad SWRETURN-3(10563.583mil,3638.504mil) on Top Layer 
+   Violation between Un-Routed Net Constraint: Net NetSWRIGHT_3 Between Pad SWRIGHT-3(8078.583mil,3638.504mil) on Top Layer And Pad SWRIGHT-4(8078.583mil,3951.496mil) on Top Layer 
+   Violation between Un-Routed Net Constraint: Net NetSWRIGHT_3 Between Pad U1-J2-12(2630mil,2375mil) on Multi-Layer And Pad SWRIGHT-3(8078.583mil,3638.504mil) on Top Layer 
+   Violation between Un-Routed Net Constraint: Net GND Between Pad U1-J2-14(2630mil,2175mil) on Multi-Layer And Pad U1-J3-7(3630mil,2875mil) on Multi-Layer 
+   Violation between Un-Routed Net Constraint: Net GND Between Pad U1-J3-7(3630mil,2875mil) on Multi-Layer And Pad U1-J3-1(3630mil,3475mil) on Multi-Layer 
+Rule Violations :23
+
+Processing Rule : Modified Polygon (Allow modified: No), (Allow shelved: No)
+Rule Violations :0
+
+Processing Rule : Width Constraint (Min=10mil) (Max=10mil) (Preferred=10mil) (All)
+Rule Violations :0
+
+Processing Rule : Power Plane Connect Rule(Relief Connect )(Expansion=20mil) (Conductor Width=10mil) (Air Gap=10mil) (Entries=4) (All)
+Rule Violations :0
+
+Processing Rule : Hole Size Constraint (Min=1mil) (Max=100mil) (All)
+Rule Violations :0
+
+Processing Rule : Hole To Hole Clearance (Gap=10mil) (All),(All)
+Rule Violations :0
+
+Processing Rule : Minimum Solder Mask Sliver (Gap=10mil) (All),(All)
+Rule Violations :0
+
+Processing Rule : Silk To Solder Mask (Clearance=10mil) (IsPad),(All)
+   Violation between Silk To Solder Mask Clearance Constraint: (0.31mil < 10mil) Between Pad SWLEFT-3(8768.583mil,3638.504mil) on Top Layer And Text "PowerInputs" (8840.5mil,3134.5mil) on Top Overlay [Top Overlay] to [Top Solder] clearance [0.31mil]
+Rule Violations :1
+
+Processing Rule : Silk to Silk (Clearance=10mil) (All),(All)
+   Violation between Silk To Silk Clearance Constraint: (Collision < 10mil) Between Text "PowerInputs" (8840.5mil,3134.5mil) on Top Overlay And Track (8798.11mil,3683.78mil)(8798.11mil,3906.22mil) on Top Overlay Silk Text to Silk Clearance [0mil]
+Rule Violations :1
+
+Processing Rule : Net Antennae (Tolerance=0mil) (All)
+Rule Violations :0
+
+Processing Rule : Height Constraint (Min=0mil) (Max=1000mil) (Prefered=500mil) (All)
+Rule Violations :0
+
+
+Violations Detected : 25
+Waived Violations : 0
+Time Elapsed        : 00:00:01
