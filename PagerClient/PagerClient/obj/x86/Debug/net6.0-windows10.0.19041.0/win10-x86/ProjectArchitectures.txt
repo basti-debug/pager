@@ -1,1 +1,0 @@
-C:\Users\basti\OneDrive - HTL-Rankweil\hwe übungen\4 Jahr\Projekt 3 - LORA Pager\PagerClient\PagerClient\PagerClient.csproj;x86
