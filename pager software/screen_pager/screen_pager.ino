@@ -45,8 +45,13 @@ int dataIndex = 0;
 
 char data; 
 
+// Menu Variables Area
 int selectedMenu = 0; // 0 Main Menu, 1 right bluetooth menu, 2 left messages menu
 
+bool bldisco = false;
+bool blon = false;
+int blstatus = 0; // 0 = error, 1 = connected, 2 = open
+char blname[] = "pager"; // Here you could change the default device name
 
 /* 
   DUMP AREA
@@ -124,8 +129,10 @@ void mainpage(){
   display.display();
 }
 
-
-void menupage(int e1, int e2, int e3, int e4){
+// Menupage with 4 parameters
+// (0-not selected/off, 1-not selected/on, 2-selected/off, 3-selected/on)
+// blname == Name of device 
+void menupage(int e1, int e2, int e3){
   display.clearDisplay();
 
   display.setTextSize(1); 
@@ -139,6 +146,92 @@ void menupage(int e1, int e2, int e3, int e4){
   display.println("discoverable");
   display.println("name");
   display.println("status");
+
+
+
+  // BLonoff AREA
+
+  if(e2 == 0){
+    // 0-not selected/off
+    display.setCursor(100,16);
+    display.print("off");
+  }
+  if(e2 == 1){
+    // 1-not selected/on
+    display.setCursor(100,16);
+    display.print("on");
+  }
+  if(e2 == 2){
+    // 2-selected/off
+    display.setCursor(100,16);
+    display.setTextColor(SH110X_BLACK,SH110X_WHITE); 
+    display.print("off");
+    display.setTextColor(SH110X_WHITE,SH110X_BLACK); 
+  }
+  if(e2 == 3){
+    // 3-selected/on
+    display.setCursor(100,16);
+    display.setTextColor(SH110X_BLACK,SH110X_WHITE); 
+    display.print("on");
+    display.setTextColor(SH110X_WHITE,SH110X_BLACK); 
+  }
+
+
+  // BLDiscoverable AREA
+
+  if(e1 == 0){
+    // 0-not selected/off
+    display.setCursor(100,32);
+    display.print("off");
+  }
+  if(e1 == 1){
+    // 1-not selected/on
+    display.setCursor(100,32);
+    display.print("on");
+  }
+  if(e1 == 2){
+    // 2-selected/off
+    display.setCursor(100,32);
+    display.setTextColor(SH110X_BLACK,SH110X_WHITE); 
+
+    display.print("off");
+    display.setTextColor(SH110X_WHITE,SH110X_BLACK); 
+  }
+  if(e1 == 3){
+    // 3-selected/on
+    display.setCursor(100,32);
+    display.setTextColor(SH110X_BLACK,SH110X_WHITE); 
+    display.print("on");
+    display.setTextColor(SH110X_WHITE,SH110X_BLACK); 
+  }
+
+
+
+  Serial.println(blstatus);
+  Serial.println(blname);
+
+
+  // Display the Name
+  display.setCursor(80,42);
+  display.print(blname);
+
+  // Display Status
+
+  if(blstatus == 0)
+  {
+    display.setCursor(90,50);
+    display.print("error");
+  }
+  if(blstatus == 1)
+  {
+    display.setCursor(100,64);
+    display.print("connected");
+  }
+  if(blstatus == 2)
+  {
+    display.setCursor(100,64);
+    display.print("open");
+  }
 
   display.display();
 }
@@ -170,7 +263,7 @@ void loop() {
 
   lorarecive();
   
-  menupage(0,0,0,0);
+  menupage(0,2,0);
   //mainpage();  
 
   delay(5);
