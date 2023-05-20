@@ -31,8 +31,13 @@
 #define oled_reset -1
 Adafruit_SH1106G display = Adafruit_SH1106G(screen_width, screen_height, &Wire, oled_reset);
 
-// Buzzer Pin
+// define pins
 #define BUZZER_PIN 18
+#define RIGHT_PIN 14
+#define ENTER_PIN 27
+#define LEFT_PIN 25
+#define RETURN_PIN 26 
+#define POWER_PIN 33
 
 #define NUMFLAKES 10
 #define XPOS 0
@@ -46,7 +51,7 @@ int dataIndex = 0;
 char data; 
 
 // Menu Variables Area
-int selectedMenu = 0; // 0 Main Menu, 1 right bluetooth menu, 2 left messages menu
+int selectedMenu = 1; // 0 left messages menu, 1 Main Menu , 2 right bluetooth menu
 
 bool bldisco = false;
 bool blon = false;
@@ -56,8 +61,7 @@ char blname[] = "pager"; // Here you could change the default device name
 /* 
   DUMP AREA
 
-  int buttonState = digitalRead(27);
-  if (buttonState == LOW) {
+  
 
 
   } 
@@ -117,7 +121,7 @@ void mainpage(){
   display.setTextColor(SH110X_WHITE); 
   display.setCursor(0,0);
   display.println("home page");
-  
+  display.println("");
 // Info  
   display.println("Last Message:");
   display.println("");
@@ -243,7 +247,11 @@ void menupage(int e1, int e2, int e3){
 
 void setup() {
 
-  pinMode(27, INPUT_PULLUP); // Enter Button
+  pinMode(ENTER_PIN, INPUT_PULLUP); // Enter Button
+  pinMode(LEFT_PIN, INPUT_PULLUP); // Left Button
+  pinMode(RIGHT_PIN, INPUT_PULLUP); // Right Button
+  pinMode(RETURN_PIN, INPUT_PULLUP); // Return Button
+
   pinMode(32,OUTPUT); //LED
   pinMode(18,OUTPUT);
   Serial.begin(9600);
@@ -256,15 +264,41 @@ void setup() {
 
   Serial2.begin(9600);
 
-  Serial.println("ready steady go");
+  Serial.println("pager serial online");
 }
 
 void loop() {
 
   lorarecive();
   
-  menupage(0,2,0);
-  //mainpage();  
+
+  int rightstate = digitalRead(RIGHT_PIN);
+  int leftstate = digitalRead(LEFT_PIN);
+  int enterstate = digitalRead(ENTER_PIN);
+  int returnstate = digitalRead(RETURN_PIN);
+
+  if (rightstate == LOW) {
+    if(selectedMenu >2){}
+    else{selectedMenu++;}
+  }
+
+  if(leftstate == LOW){
+    if(selectedMenu < 0){}
+    else{selectedMenu--;}
+  }
+
+  if(selectedMenu == 0){
+
+  }
+  if(selectedMenu == 1){
+    // MAIN PAGE
+    mainpage(); 
+  }
+  if(selectedMenu == 2){
+    // SETTINGS PAGE
+    menupage(0,2,0);
+  }
+  
 
   delay(5);
 }
