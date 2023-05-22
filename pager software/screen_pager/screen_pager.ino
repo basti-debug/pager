@@ -61,15 +61,12 @@ char blname[] = "pager"; // Here you could change the default device name
 // Recieve Mark
 bool bread;
 
-/* 
-  DUMP AREA
-
-  
+// Clearance macro ! you can change this ! 
+char res = '%'; // if this is send over the Serial2 connection the current message will be cleared 
 
 
-  } 
 
-*/
+// Functions 
 
 void Snotifcation(){
   // Melody
@@ -93,12 +90,19 @@ void lorarecive(){    // handling incomming data from the module and writing to 
    
     digitalWrite(32,HIGH); // Traffic LED for testing 
     data = Serial2.read(); 
-    char res = '%'; // delete macro 
-    if (dataIndex < MAX_DATA_LENGTH || bread == true || data == res) {
+    
+    if (dataIndex < MAX_DATA_LENGTH ) {
       receivedData[dataIndex] = data;
       dataIndex++;
     } 
-    else {
+    Serial.print(data);
+    if (data == res){Serial.print("We got the clearance %");}
+    
+    digitalWrite(32,LOW);
+
+    Serial.println(receivedData);
+  }
+  if (dataIndex >= MAX_DATA_LENGTH || bread == true || data == res) {
       Serial.println("clearing ongoing");
       for (int i = 0; i < MAX_DATA_LENGTH; i++) {
         receivedData[i] = 0;
@@ -106,13 +110,9 @@ void lorarecive(){    // handling incomming data from the module and writing to 
       dataIndex = 0;
       delay(10);
     }
-    digitalWrite(32,LOW);
-
-    Serial.println(receivedData);
-  }
 }
 
-
+// PAGES 
 
 // Display the Main Page, automaticly clears the screen so cant be used when displaying additionally
 void mainpage(bool read){
@@ -303,7 +303,7 @@ void menupage(int e1, int e2, int e3){
 
 
 
-
+// NORMAL CODE
 
 void setup() {
 
