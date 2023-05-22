@@ -14,10 +14,17 @@
 
 
 // needed Dependencys
-#include <Wire.h>
+#include <Wire.h> // IIC 
+// Screen
 #include <Adafruit_GFX.h>
 #include <Adafruit_SH110X.h>
+
+// Bluetooth
+
+#include "BluetoothSerial.h"
+
 #include "Arduino.h"
+
 
 
 // Screen Address
@@ -48,7 +55,7 @@ Adafruit_SH1106G display = Adafruit_SH1106G(screen_width, screen_height, &Wire, 
 char receivedData[MAX_DATA_LENGTH];
 int dataIndex = 0;
 
-char data; 
+char data; <
 
 // Menu Variables Area
 int selectedMenu = 1; // 0 left messages menu, 1 Main Menu , 2 right bluetooth menu
@@ -56,7 +63,7 @@ int selectedMenu = 1; // 0 left messages menu, 1 Main Menu , 2 right bluetooth m
 bool bldisco = false;
 bool blon = false;
 int blstatus = 0; // 0 = error, 1 = connected, 2 = open
-char blname[] = "pager"; // Here you could change the default device name
+String = "pager"+ random(1,999); // Here you could change the default device name / currently pager with random number 
 
 // Recieve Mark
 bool bread;
@@ -64,6 +71,10 @@ bool bread;
 // Clearance macro ! you can change this ! 
 char res = '%'; // if this is send over the Serial2 connection the current message will be cleared 
 
+// end of message macro 
+char res = ';';
+
+BluetoothSerial SerialBT;
 
 
 // Functions 
@@ -301,9 +312,11 @@ void menupage(int e1, int e2, int e3){
 
 
 
-// NORMAL CODE
+// Setup
 
 void setup() {
+
+  // pinmodes
 
   pinMode(ENTER_PIN, INPUT_PULLUP); // Enter Button
   pinMode(LEFT_PIN, INPUT_PULLUP); // Left Button
@@ -312,18 +325,20 @@ void setup() {
   pinMode(POWER_PIN, INPUT_PULLUP); // Top Button
 
   pinMode(32,OUTPUT); //LED
-  pinMode(18,OUTPUT);
-  Serial.begin(9600);
+  pinMode(18,OUTPUT); //Buzzer
+
+
+  Serial.begin(9600); // Start Serial intern / only TESTING
+  Serial2.begin(9600); // Start LORA   
+  SerialBT.begin(device_name); // Start Bluetooth service
 
   delay(250);
-  display.begin(i2c_address, true);  // sending address
+  display.begin(i2c_address, true);  // initalize Screen
 
-  display.display();
+  display.display(); 
   delay(2000);
-
-  Serial2.begin(9600);
-
   Serial.println("pager serial online");
+  SerialBT.print("pager online");
 }
 
 void loop() {
