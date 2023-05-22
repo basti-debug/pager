@@ -43,7 +43,7 @@ Adafruit_SH1106G display = Adafruit_SH1106G(screen_width, screen_height, &Wire, 
 #define XPOS 0
 #define YPOS 1
 #define DELTAY 2
-#define MAX_DATA_LENGTH 20
+#define MAX_DATA_LENGTH 60
 
 char receivedData[MAX_DATA_LENGTH];
 int dataIndex = 0;
@@ -57,6 +57,9 @@ bool bldisco = false;
 bool blon = false;
 int blstatus = 0; // 0 = error, 1 = connected, 2 = open
 char blname[] = "pager"; // Here you could change the default device name
+
+// Recieve Mark
+bool bread;
 
 /* 
   DUMP AREA
@@ -90,14 +93,14 @@ void lorarecive(){    // handling incomming data from the module and writing to 
    
     digitalWrite(32,HIGH); // Traffic LED for testing 
     data = Serial2.read(); 
-
-    if (dataIndex < MAX_DATA_LENGTH) {
+    char res = '%'; // delete macro 
+    if (dataIndex < MAX_DATA_LENGTH || bread == true || data == res) {
       receivedData[dataIndex] = data;
       dataIndex++;
     } 
     else {
       Serial.println("clearing ongoing");
-      for (int i = 0; i <= MAX_DATA_LENGTH; i++) {
+      for (int i = 0; i < MAX_DATA_LENGTH; i++) {
         receivedData[i] = 0;
       }
       dataIndex = 0;
@@ -112,7 +115,7 @@ void lorarecive(){    // handling incomming data from the module and writing to 
 
 
 // Display the Main Page, automaticly clears the screen so cant be used when displaying additionally
-void mainpage(){
+void mainpage(bool read){
   display.clearDisplay();
 
 // Heading
@@ -129,6 +132,68 @@ void mainpage(){
   display.println(receivedData);
 
   
+
+  display.display();
+}
+
+// Send Page
+void sendpage(int cursor){
+  display.clearDisplay();
+
+  display.setTextSize(1); 
+  display.setTextColor(SH110X_WHITE); 
+  display.setCursor(0,0);
+  display.println("send page");
+
+  display.println("");
+  display.println("- Quick Sender -");
+  display.println("");
+  display.println("Hi");
+  display.println("Bye");
+  display.println("Simon");
+ 
+
+  if(cursor == 0){
+    //notselected 1 
+    display.setCursor(100,16);
+    display.print("send");
+  }
+  if(cursor == 1){
+    //selected 1
+    display.setCursor(100,16);
+    display.setTextColor(SH110X_BLACK,SH110X_WHITE); 
+    display.print("send");
+    display.setTextColor(SH110X_WHITE,SH110X_BLACK); 
+  }
+
+
+
+  if(cursor == 2){
+    //notseleceted 2   
+    display.setCursor(100,32);
+    display.print("send");
+    
+  }
+  if(cursor == 3){
+    //selected 2
+    display.setCursor(100,32);
+    display.setTextColor(SH110X_BLACK,SH110X_WHITE); 
+    display.print("send");
+    display.setTextColor(SH110X_WHITE,SH110X_BLACK); 
+  }
+  if(cursor == 4){
+    //notselected 3
+    display.setCursor(100,50);
+    display.print("send");
+  }
+  if(cursor == 5){
+    //selcted 3
+    display.setCursor(100,50);
+    display.setTextColor(SH110X_BLACK,SH110X_WHITE); 
+    display.print("send");
+    display.setTextColor(SH110X_WHITE,SH110X_BLACK); 
+  }
+
 
   display.display();
 }
@@ -210,11 +275,6 @@ void menupage(int e1, int e2, int e3){
   }
 
 
-
-  Serial.println(blstatus);
-  Serial.println(blname);
-
-
   // Display the Name
   display.setCursor(80,42);
   display.print(blname);
@@ -251,6 +311,7 @@ void setup() {
   pinMode(LEFT_PIN, INPUT_PULLUP); // Left Button
   pinMode(RIGHT_PIN, INPUT_PULLUP); // Right Button
   pinMode(RETURN_PIN, INPUT_PULLUP); // Return Button
+  pinMode(POWER_PIN, INPUT_PULLUP); // Top Button
 
   pinMode(32,OUTPUT); //LED
   pinMode(18,OUTPUT);
@@ -276,6 +337,12 @@ void loop() {
   int leftstate = digitalRead(LEFT_PIN);
   int enterstate = digitalRead(ENTER_PIN);
   int returnstate = digitalRead(RETURN_PIN);
+  int topstate = digitalRead(POWER_PIN);
+  
+
+  if(topstate == LOW){
+    bread = true;
+  }
 
   if (rightstate == LOW) {
     if(selectedMenu >2){}
@@ -288,17 +355,17 @@ void loop() {
   }
 
   if(selectedMenu == 0){
-
+    sendpage(0);
   }
   if(selectedMenu == 1){
     // MAIN PAGE
-    mainpage(); 
+    mainpage(bread); 
   }
   if(selectedMenu == 2){
     // SETTINGS PAGE
     menupage(0,2,0);
   }
-  
 
-  delay(5);
+
+  delay(100);
 }
