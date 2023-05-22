@@ -95,19 +95,17 @@ void lorarecive(){    // handling incomming data from the module and writing to 
       receivedData[dataIndex] = data;
       dataIndex++;
     } 
-    Serial.print(data);
-    if (data == res){Serial.print("We got the clearance %");}
     
     digitalWrite(32,LOW);
-
-    Serial.println(receivedData);
   }
-  if (dataIndex >= MAX_DATA_LENGTH || bread == true || data == res) {
-      Serial.println("clearing ongoing");
+  if (dataIndex > MAX_DATA_LENGTH || bread == true || data == res) {
+      Serial.println("buffer cleared");
       for (int i = 0; i < MAX_DATA_LENGTH; i++) {
         receivedData[i] = 0;
       }
       dataIndex = 0;
+      bread = false;
+      data = 0;
       delay(10);
     }
 }
