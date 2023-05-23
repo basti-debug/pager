@@ -55,7 +55,7 @@ Adafruit_SH1106G display = Adafruit_SH1106G(screen_width, screen_height, &Wire, 
 char receivedData[MAX_DATA_LENGTH];
 int dataIndex = 0;
 
-char data; <
+char data; 
 
 // Menu Variables Area
 int selectedMenu = 1; // 0 left messages menu, 1 Main Menu , 2 right bluetooth menu
@@ -63,7 +63,7 @@ int selectedMenu = 1; // 0 left messages menu, 1 Main Menu , 2 right bluetooth m
 bool bldisco = false;
 bool blon = false;
 int blstatus = 0; // 0 = error, 1 = connected, 2 = open
-String = "pager"+ random(1,999); // Here you could change the default device name / currently pager with random number 
+String blname = "pager"; //+ random(1,999); // Here you could change the default device name / currently pager with random number 
 
 // Recieve Mark
 bool bread;
@@ -72,7 +72,16 @@ bool bread;
 char res = '%'; // if this is send over the Serial2 connection the current message will be cleared 
 
 // end of message macro 
-char res = ';';
+char end = ';';
+
+
+// Variables needed for settings menu selection
+int sc = 0; // cycle
+int maxsc = 4;// Number of Entrys ! change if more entrys added ! 
+
+int e1 = 1;
+int e2 = 0; 
+int e3 = 0;
 
 BluetoothSerial SerialBT;
 
@@ -209,7 +218,6 @@ void sendpage(int cursor){
 
 // Menupage with 4 parameters
 // (0-not selected/off, 1-not selected/on, 2-selected/off, 3-selected/on)
-// blname == Name of device 
 void menupage(int e1, int e2, int e3){
   display.clearDisplay();
 
@@ -316,6 +324,8 @@ void menupage(int e1, int e2, int e3){
 
 void setup() {
 
+  Serial.print(blname);
+
   // pinmodes
 
   pinMode(ENTER_PIN, INPUT_PULLUP); // Enter Button
@@ -330,15 +340,15 @@ void setup() {
 
   Serial.begin(9600); // Start Serial intern / only TESTING
   Serial2.begin(9600); // Start LORA   
-  SerialBT.begin(device_name); // Start Bluetooth service
+  SerialBT.begin(blname); // Start Bluetooth service
 
   delay(250);
   display.begin(i2c_address, true);  // initalize Screen
 
   display.display(); 
   delay(2000);
-  Serial.println("pager serial online");
-  SerialBT.print("pager online");
+  Serial.println(blname +" serial online");
+  SerialBT.print(blname + " online");
 }
 
 void loop() {
@@ -346,13 +356,13 @@ void loop() {
   lorarecive();
   
 
+  // vars of the button states
   int rightstate = digitalRead(RIGHT_PIN);
   int leftstate = digitalRead(LEFT_PIN);
   int enterstate = digitalRead(ENTER_PIN);
   int returnstate = digitalRead(RETURN_PIN);
   int topstate = digitalRead(POWER_PIN);
   
-
   if(topstate == LOW){
     bread = true;
   }
@@ -376,9 +386,36 @@ void loop() {
   }
   if(selectedMenu == 2){
     // SETTINGS PAGE
-    menupage(0,2,0);
+    if(sc==1){
+      e1 + 2;
+      delay(100);
+      e1 - 2;
+    }
+    if(sc==2){
+      e2 + 2;
+      delay(100);
+      e2 - 1;
+    }
+    if(sc==3){
+      e3 + 2;
+      delay(100);
+      e3 - 1;
+    }
+   
+    menupage(e1,e2,e3);
   }
 
+
+  if(returnstate == LOW){
+    if (sc <= maxsc){
+      Serial.print("ok");
+      sc = sc +1;
+    }
+    else {sc = 0; Serial.print("aua");};
+  }
+  if(enterstate == LOW){
+    
+  }
 
   delay(100);
 }
