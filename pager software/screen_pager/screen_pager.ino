@@ -76,10 +76,10 @@ char end = ';';
 
 
 // Variables needed for settings menu selection
-int sc = 0; // cycle
-int maxsc = 4;// Number of Entrys ! change if more entrys added ! 
+int sc = 1; // cycle
+int maxsc = 2;// Number of Entrys ! change if more entrys added ! 
 
-int e1 = 1;
+int e1 = 0;
 int e2 = 0; 
 int e3 = 0;
 
@@ -218,7 +218,7 @@ void sendpage(int cursor){
 
 // Menupage with 4 parameters
 // (0-not selected/off, 1-not selected/on, 2-selected/off, 3-selected/on)
-void menupage(int e1, int e2, int e3){
+void menupage(int e1, int e2, int e3, int sc){
   display.clearDisplay();
 
   display.setTextSize(1); 
@@ -233,63 +233,53 @@ void menupage(int e1, int e2, int e3){
   display.println("name");
   display.println("status");
 
+  // cursor display function
 
-
-  // BLonoff AREA
-
-  if(e2 == 0){
-    // 0-not selected/off
-    display.setCursor(100,16);
-    display.print("off");
-  }
-  if(e2 == 1){
-    // 1-not selected/on
-    display.setCursor(100,16);
-    display.print("on");
-  }
-  if(e2 == 2){
-    // 2-selected/off
-    display.setCursor(100,16);
+  if(sc==1){
+    //first entry, Bluetooth on off toggle
+    display.setCursor(100, 16);
     display.setTextColor(SH110X_BLACK,SH110X_WHITE); 
-    display.print("off");
-    display.setTextColor(SH110X_WHITE,SH110X_BLACK); 
-  }
-  if(e2 == 3){
-    // 3-selected/on
-    display.setCursor(100,16);
-    display.setTextColor(SH110X_BLACK,SH110X_WHITE); 
-    display.print("on");
-    display.setTextColor(SH110X_WHITE,SH110X_BLACK); 
-  }
-
-
-  // BLDiscoverable AREA
-
-  if(e1 == 0){
-    // 0-not selected/off
+    if(e1==0){
+      display.print("off");
+    }
+    if(e1==1){
+      display.print("on");
+    }
+    display.setTextColor(SH110X_WHITE,SH110X_BLACK);
+    
+    //second entry, discoverable toggle on off
     display.setCursor(100,32);
-    display.print("off");
-  }
-  if(e1 == 1){
-    // 1-not selected/on
-    display.setCursor(100,32);
-    display.print("on");
-  }
-  if(e1 == 2){
-    // 2-selected/off
+    if(e2==0){
+      display.print("off");
+    }
+    if(e2==1){
+      display.print("on");
+    }
+
+  } 
+
+  if (sc == 2){
+    //first entry, Bluetooth on off toggle
+    display.setCursor(100, 16);
+    if(e1==0){
+      display.print("off");
+    }
+    if(e1==1){
+      display.print("on");
+    }
+    
+    //second entry, discoverable toggle on off
     display.setCursor(100,32);
     display.setTextColor(SH110X_BLACK,SH110X_WHITE); 
-
-    display.print("off");
-    display.setTextColor(SH110X_WHITE,SH110X_BLACK); 
+    if(e2==0){
+      display.print("off");
+    }
+    if(e2==1){
+      display.print("on");
+    }
+    display.setTextColor(SH110X_WHITE,SH110X_BLACK);
   }
-  if(e1 == 3){
-    // 3-selected/on
-    display.setCursor(100,32);
-    display.setTextColor(SH110X_BLACK,SH110X_WHITE); 
-    display.print("on");
-    display.setTextColor(SH110X_WHITE,SH110X_BLACK); 
-  }
+  
 
 
   // Display the Name
@@ -386,36 +376,30 @@ void loop() {
   }
   if(selectedMenu == 2){
     // SETTINGS PAGE
-    if(sc==1){
-      e1 + 2;
-      delay(100);
-      e1 - 2;
-    }
-    if(sc==2){
-      e2 + 2;
-      delay(100);
-      e2 - 1;
-    }
-    if(sc==3){
-      e3 + 2;
-      delay(100);
-      e3 - 1;
-    }
-   
-    menupage(e1,e2,e3);
-  }
-
-
-  if(returnstate == LOW){
-    if (sc <= maxsc){
-      Serial.print("ok");
-      sc = sc +1;
-    }
-    else {sc = 0; Serial.print("aua");};
-  }
-  if(enterstate == LOW){
     
+    menupage(e1,e2,e3,sc);
   }
 
+  if(returnstate == LOW){ // Cycle through the Settings options
+    sc = sc +1;
+    
+    if (sc > maxsc){
+      sc = 1;
+    }
+    delay(25);
+  }
+  if(enterstate == LOW){ // Event when enter is pressed - so setting is changed 
+    switch (sc){ // switch case where cursor is
+      case 1: // Cursor position 1 
+        e1++;
+        if (e1 == 2){e1 = 0;}
+      break;
+      case 2: // Cursor position 2
+        e2 ++;
+        if (e2 == 2){e2= 0;}
+      break;
+    }
+
+  }
   delay(100);
 }

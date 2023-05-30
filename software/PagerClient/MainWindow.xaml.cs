@@ -22,11 +22,16 @@ using System.Runtime.InteropServices; // For DllImport
 
 
 
+
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
 namespace PagerClient
 {
+
+    WindowsSystemDispatcherQueueHelper m_wsdqHelper; // See separate sample below for implementation
+    Microsoft.UI.Composition.SystemBackdrops.MicaController m_micaController;
+    Microsoft.UI.Composition.SystemBackdrops.SystemBackdropConfiguration m_configurationSource;
     /// <summary>
     /// An empty window that can be used on its own or navigated to within a Frame.
     /// </summary>
@@ -38,7 +43,7 @@ namespace PagerClient
         public MainWindow()
         {
             this.InitializeComponent();
-
+            TrySetMicaBackdrop();
             MainPagerWindow.ExtendsContentIntoTitleBar = true;  // enable custom titlebar
             MainPagerWindow.SetTitleBar(PagerAppTitleBar);      // set user ui element as titlebar
 
@@ -145,5 +150,11 @@ namespace PagerClient
                 case ElementTheme.Default: m_configurationSource.Theme = Microsoft.UI.Composition.SystemBackdrops.SystemBackdropTheme.Default; break;
             }
         }
+
+
+
+
+
+
     }    
 }
