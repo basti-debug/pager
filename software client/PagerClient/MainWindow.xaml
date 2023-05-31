@@ -14,9 +14,10 @@
     <Grid Name="mainGrid">
         <Grid x:Name="PagerAppTitleBar"
               Canvas.ZIndex="1"
-              Height="30"
+              Height="50"
               IsHitTestVisible="True"
-              VerticalAlignment="Top">
+              VerticalAlignment="Top"
+              >
             <Image Source="/Assets/WindowIcon.ico"
                    HorizontalAlignment="Left"
                    Width="16"
@@ -24,15 +25,19 @@
             <TextBlock x:Name="AppTitleBarText"
                        VerticalAlignment="Center"
                        TextWrapping="NoWrap"
-                       Text="Pager Client"
+                       Text="Pager Client v1"
                        Style="{StaticResource CaptionTextBlockStyle}"
                        Margin="50,0,0,0"/>
         </Grid>
 
-        <Grid>
-            <TextBlock FontSize="30" Margin="50">
-                Welcome to PagerSender
-            </TextBlock>
-        </Grid>
+        <NavigationView x:Name="nvHamburgerleft" Margin="0,50,0,0">
+            <NavigationView.MenuItems>
+                <NavigationViewItem Icon="Home" Content="Main Menu" Tag="MainItem" />
+                <NavigationViewItem Icon="Edit" Content="Change Messages" Tag="chmess" />
+                <NavigationViewItem Icon="MapDrive" Content="Connect to Pager" Tag="connectpager"/>
+            </NavigationView.MenuItems>
+            <Frame x:Name="contentFrame">
+            </Frame>
+        </NavigationView>
     </Grid>
 </Window>

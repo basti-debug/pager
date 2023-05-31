@@ -8,6 +8,8 @@
     xmlns:local="using:PagerClient">
     <Application.Resources>
         <ResourceDictionary>
+            <SolidColorBrush x:Key="WindowCaptionBackground" Color="Transparent"/>         <!-- THESE TWO LINES DISABLES THE GREY SHADE -->
+            <SolidColorBrush x:Key="WindowCaptionBackgroundDisabled" Color="Transparent"/>
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
                 <!-- Other merged dictionaries here -->

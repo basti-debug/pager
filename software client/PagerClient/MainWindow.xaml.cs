@@ -28,10 +28,7 @@ using System.Runtime.InteropServices; // For DllImport
 
 namespace PagerClient
 {
-
-    WindowsSystemDispatcherQueueHelper m_wsdqHelper; // See separate sample below for implementation
-    Microsoft.UI.Composition.SystemBackdrops.MicaController m_micaController;
-    Microsoft.UI.Composition.SystemBackdrops.SystemBackdropConfiguration m_configurationSource;
+    
     /// <summary>
     /// An empty window that can be used on its own or navigated to within a Frame.
     /// </summary>
