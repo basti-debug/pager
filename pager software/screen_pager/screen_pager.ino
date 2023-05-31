@@ -218,6 +218,9 @@ void sendpage(int cursor){
 
 // Menupage with 4 parameters
 // (0-not selected/off, 1-not selected/on, 2-selected/off, 3-selected/on)
+// sc == cursor 
+// Page also displays name and status of the connection
+
 void menupage(int e1, int e2, int e3, int sc){
   display.clearDisplay();
 
@@ -330,7 +333,6 @@ void setup() {
 
   Serial.begin(9600); // Start Serial intern / only TESTING
   Serial2.begin(9600); // Start LORA   
-  SerialBT.begin(blname); // Start Bluetooth service
 
   delay(250);
   display.begin(i2c_address, true);  // initalize Screen
@@ -338,7 +340,6 @@ void setup() {
   display.display(); 
   delay(2000);
   Serial.println(blname +" serial online");
-  SerialBT.print(blname + " online");
 }
 
 void loop() {
@@ -400,6 +401,19 @@ void loop() {
       break;
     }
 
+  }
+
+  // Bluetooth Handling
+  if (SerialBT.available()) {
+    char inputValue = SerialBT.read();
+    Serial.println(inputValue);
+  }
+
+  if(e1 == 1){ // Bluetooth ON
+    SerialBT.begin(blname); // Start Bluetooth service
+  }
+  if(e1 == 0){ // Bluetooth off
+    SerialBT.end();
   }
   delay(100);
 }
