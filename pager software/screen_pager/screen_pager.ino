@@ -1,19 +1,23 @@
 /*
 
-  Pager Code v2
+  Pager Code v3
   by basti_debug
 
   This is script is in charge of:
 *  handling incomming traffic from the module 
 *  displaying:
-*  * right menu (activate/deactivate bluetooth, devices etc?)
+*  * right menu (activate/deactivate bluetooth)
 *  * main menu (see latest message)
 *  handling user input
+
+* v3 
+* Handling Bluetooth Actions 
 
 */
 
 
 // needed Dependencys
+
 #include <Wire.h> // IIC 
 // Screen
 #include <Adafruit_GFX.h>
@@ -54,8 +58,38 @@ Adafruit_SH1106G display = Adafruit_SH1106G(screen_width, screen_height, &Wire, 
 
 char receivedData[MAX_DATA_LENGTH];
 int dataIndex = 0;
+int btdataIndex = 0;
 
+
+// MACROS
+
+// ! you can change this !  but be aware that corresponding programms may not work anymore 
+
+// Clearance macro 
+char res = '%'; // if this is send over the Serial2 connection the current message will be cleared 
+
+// end of message macro 
+char end = ';';
+
+// bluetooth macro
+char blmacro = '$';
+bool bllora;
+
+// BUFFERS
+
+// Input LORA Data Buffer
 char data; 
+
+// Bluetooth Buffer
+char btdata;
+char btMAdata; // macro alert buffer
+
+
+
+
+
+
+// MENU AREA
 
 // Menu Variables Area
 int selectedMenu = 1; // 0 left messages menu, 1 Main Menu , 2 right bluetooth menu
@@ -65,14 +99,9 @@ bool blon = false;
 int blstatus = 0; // 0 = error, 1 = connected, 2 = open
 String blname = "pager"; //+ random(1,999); // Here you could change the default device name / currently pager with random number 
 
-// Recieve Mark
+// Recieve Mark so when true message will be cleared
 bool bread;
 
-// Clearance macro ! you can change this ! 
-char res = '%'; // if this is send over the Serial2 connection the current message will be cleared 
-
-// end of message macro 
-char end = ';';
 
 
 // Variables needed for settings menu selection
@@ -105,9 +134,7 @@ void sendDataLORA(char data){ // send Data over LORA
   Serial2.print(data);
 }
 
-void lorarecive(){    // handling incomming data from the module and writing to the receivedData variable
- if (Serial2.available()) {
-   
+void rdLORA(){
     digitalWrite(32,HIGH); // Traffic LED for testing 
     data = Serial2.read(); 
     
@@ -117,8 +144,19 @@ void lorarecive(){    // handling incomming data from the module and writing to 
     } 
     
     digitalWrite(32,LOW);
-  }
-  if (dataIndex > MAX_DATA_LENGTH || bread == true || data == res) {
+}
+
+void rdBluetooth(){
+    btdata = SerialBT.read(); 
+    Serial.println(btdata);
+    if (btdataIndex < MAX_DATA_LENGTH && isAscii(btdata)) {
+      Serial.println(btdata);
+      receivedData[btdataIndex] = btdata;
+      btdataIndex++;
+    } 
+}
+void overloaddata(){
+    if (dataIndex > MAX_DATA_LENGTH || btdataIndex > MAX_DATA_LENGTH || bread == true || data == res || btdata == res) {
       Serial.println("buffer cleared");
       for (int i = 0; i < MAX_DATA_LENGTH; i++) {
         receivedData[i] = 0;
@@ -128,6 +166,17 @@ void lorarecive(){    // handling incomming data from the module and writing to 
       data = 0;
       delay(10);
     }
+}
+
+void receive(){    // handling incomming data from the module and writing to the receivedData variable
+  if (Serial2.available()) { // LORA receive
+    rdLORA();
+    overloaddata();    
+  }
+  if (bllora == true){    // Bluetooth receive 
+    rdBluetooth();
+    overloaddata();   
+  }
 }
 
 // PAGES 
@@ -340,11 +389,12 @@ void setup() {
   display.display(); 
   delay(2000);
   Serial.println(blname +" serial online");
+
 }
 
 void loop() {
 
-  lorarecive();
+  receive();
   
 
   // vars of the button states
@@ -354,6 +404,8 @@ void loop() {
   int returnstate = digitalRead(RETURN_PIN);
   int topstate = digitalRead(POWER_PIN);
   
+// BUTTON Handling
+
   if(topstate == LOW){
     bread = true;
   }
@@ -366,19 +418,6 @@ void loop() {
   if(leftstate == LOW){
     if(selectedMenu < 0){}
     else{selectedMenu--;}
-  }
-
-  if(selectedMenu == 0){
-    sendpage(0);
-  }
-  if(selectedMenu == 1){
-    // MAIN PAGE
-    mainpage(bread); 
-  }
-  if(selectedMenu == 2){
-    // SETTINGS PAGE
-    
-    menupage(e1,e2,e3,sc);
   }
 
   if(returnstate == LOW){ // Cycle through the Settings options
@@ -403,11 +442,33 @@ void loop() {
 
   }
 
+// MENU HANDLING 
+
+  if(selectedMenu == 0){
+    sendpage(0);
+  }
+  if(selectedMenu == 1){
+    // MAIN PAGE
+    mainpage(bread); 
+  }
+  if(selectedMenu == 2){
+    // SETTINGS PAGE
+    
+    menupage(e1,e2,e3,sc);
+  }
+
   // Bluetooth Handling
   if (SerialBT.available()) {
-    char inputValue = SerialBT.read();
-    Serial.println(inputValue);
+    btMAdata = SerialBT.read();
   }
+
+  // Reacting to the bluetooth handler
+  if(btMAdata == blmacro){
+    Serial.println("Bluetooth to LORA activate");
+    bllora = true;
+  }
+
+// BLUETOOTH STATE HANDLER
 
   if(e1 == 1){ // Bluetooth ON
     SerialBT.begin(blname); // Start Bluetooth service
