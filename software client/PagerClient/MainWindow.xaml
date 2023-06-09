@@ -33,11 +33,13 @@
         <NavigationView x:Name="nvHamburgerleft" Margin="0,50,0,0">
             <NavigationView.MenuItems>
                 <NavigationViewItem Icon="Home" Content="Main Menu" Tag="MainItem" />
-                <NavigationViewItem Icon="Edit" Content="Change Messages" Tag="chmess" />
+                <NavigationViewItem Icon="Edit" Content="Change Messages" Tag="chmsg" />
                 <NavigationViewItem Icon="MapDrive" Content="Connect to Pager" Tag="connectpager"/>
             </NavigationView.MenuItems>
-            <Frame x:Name="contentFrame">
+            <Frame x:Name="contentGrid">
             </Frame>
         </NavigationView>
+
+
     </Grid>
 </Window>

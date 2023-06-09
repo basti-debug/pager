@@ -18,6 +18,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using WinRT;
 using System.Runtime.InteropServices; // For DllImport
+using System.Reflection.PortableExecutable;
 
 
 
@@ -34,6 +35,9 @@ namespace PagerClient
     /// </summary>
     public sealed partial class MainWindow : Window
     {
+        PageCreator newpage = new PageCreator();
+
+
         WindowsSystemDispatcherQueueHelper m_wsdqHelper; // See separate sample below for implementation
         Microsoft.UI.Composition.SystemBackdrops.MicaController m_micaController;
         Microsoft.UI.Composition.SystemBackdrops.SystemBackdropConfiguration m_configurationSource;
@@ -44,7 +48,32 @@ namespace PagerClient
             MainPagerWindow.ExtendsContentIntoTitleBar = true;  // enable custom titlebar
             MainPagerWindow.SetTitleBar(PagerAppTitleBar);      // set user ui element as titlebar
 
-            
+            nvHamburgerleft.SelectionChanged += NvSample_SelectionChanged;
+
+            #region switch pages 
+            void NvSample_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
+            {
+                var item = args.SelectedItem as NavigationViewItem;
+
+
+
+                if (item.Tag != null && item.Tag.Equals("MainItem"))
+                {
+                    newpage.displayMainPage(contentGrid, mainGrid, MainPagerWindow);
+                }
+                if (item.Tag != null && item.Tag.Equals("Settings"))
+                {
+                    newpage.displaySettingsPage(contentGrid, mainGrid);
+                }
+                if (item.Tag != null && item.Tag.Equals("connectpager"))
+                {
+                    newpage.displayConnectionPage(contentGrid, mainGrid, MainPagerWindow);
+                }
+
+            }
+
+            #endregion
+
         }
 
         class WindowsSystemDispatcherQueueHelper
