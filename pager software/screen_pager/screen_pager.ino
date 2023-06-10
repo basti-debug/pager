@@ -1,6 +1,6 @@
 /*
 
-  Pager Code v3
+  Pager Code v4
   by basti_debug
 
   This is script is in charge of:
@@ -12,6 +12,10 @@
 
 * v3 
 * Handling Bluetooth Actions 
+
+* v4
+* send menu 
+* basic sending possible
 
 */
 
@@ -107,10 +111,20 @@ bool bread;
 // Variables needed for settings menu selection
 int sc = 1; // cycle
 int maxsc = 2;// Number of Entrys ! change if more entrys added ! 
+int masxcursor = 3; // Number of Entrys send menu ! change if more entrys in the menu added !
+
 
 int e1 = 0;
 int e2 = 0; 
 int e3 = 0;
+
+int cursor = 1;
+
+// Messages 
+char* msg1 = "Ahoi";
+char* msg2 = "Hello";
+char* msg3 = "Im ok";
+
 
 BluetoothSerial SerialBT;
 
@@ -215,52 +229,51 @@ void sendpage(int cursor){
   display.println("");
   display.println("- Quick Sender -");
   display.println("");
-  display.println("Hi");
-  display.println("Bye");
-  display.println("Simon");
- 
+  display.println(msg1);
+  display.println(msg2);
+  display.println(msg3);
 
-  if(cursor == 0){
-    //notselected 1 
-    display.setCursor(100,16);
+  if(cursor==1){
+    //first message 
+    display.setCursor(100, 32);
+    display.setTextColor(SH110X_BLACK, SH110X_WHITE);
     display.print("send");
-  }
-  if(cursor == 1){
-    //selected 1
-    display.setCursor(100,16);
-    display.setTextColor(SH110X_BLACK,SH110X_WHITE); 
+    //second entry, second msg 
+    display.setCursor(100,40);
+    display.setTextColor(SH110X_WHITE,SH110X_BLACK);
     display.print("send");
-    display.setTextColor(SH110X_WHITE,SH110X_BLACK); 
-  }
+    //third entry, thrid msg
+    display.setCursor(100,48);
+    display.print("send");
+  } 
 
-
-
-  if(cursor == 2){
-    //notseleceted 2   
-    display.setCursor(100,32);
+  if (cursor == 2){
+    //first message 
+    display.setCursor(100, 32);
     display.print("send");
-    
-  }
-  if(cursor == 3){
-    //selected 2
-    display.setCursor(100,32);
-    display.setTextColor(SH110X_BLACK,SH110X_WHITE); 
+    //second entry, second msg
+    display.setTextColor(SH110X_BLACK, SH110X_WHITE); 
+    display.setCursor(100,40);
     display.print("send");
-    display.setTextColor(SH110X_WHITE,SH110X_BLACK); 
-  }
-  if(cursor == 4){
-    //notselected 3
-    display.setCursor(100,50);
+    //third entry, thrid msg
+    display.setTextColor(SH110X_WHITE,SH110X_BLACK);
+    display.setCursor(100,48);
     display.print("send");
-  }
-  if(cursor == 5){
-    //selcted 3
-    display.setCursor(100,50);
-    display.setTextColor(SH110X_BLACK,SH110X_WHITE); 
-    display.print("send");
-    display.setTextColor(SH110X_WHITE,SH110X_BLACK); 
   }
 
+  if (cursor == 3){
+     //first message 
+    display.setCursor(100, 32);
+    display.print("send");
+    //second entry, second msg
+    display.setCursor(100,40);
+    display.print("send");
+    //third entry, thrid msg
+    display.setTextColor(SH110X_BLACK, SH110X_WHITE); 
+    display.setCursor(100,48);
+    display.print("send");
+    display.setTextColor(SH110X_WHITE,SH110X_BLACK);
+  }
 
   display.display();
 }
@@ -406,30 +419,41 @@ void loop() {
   
 // BUTTON Handling
 
-  if(topstate == LOW){
+  if(topstate == LOW){  // Bread Button so when pressed notification deleted 
     bread = true;
   }
 
-  if (rightstate == LOW) {
+  if (rightstate == LOW) {  // Scroll Right
     if(selectedMenu >2){}
     else{selectedMenu++;}
   }
 
-  if(leftstate == LOW){
+  if(leftstate == LOW){   // Scroll Left
     if(selectedMenu < 0){}
     else{selectedMenu--;}
   }
 
   if(returnstate == LOW){ // Cycle through the Settings options
-    sc = sc +1;
+    if(selectedMenu == 2){  // When Settings Menu selected
+      sc++;
+    }
+    if(selectedMenu == 0){  // When in Send Menu
+      cursor++;
+    }
     
+    if(cursor > masxcursor){
+      cursor = 1;
+    }
+
     if (sc > maxsc){
       sc = 1;
     }
     delay(25);
   }
   if(enterstate == LOW){ // Event when enter is pressed - so setting is changed 
-    switch (sc){ // switch case where cursor is
+    Serial.print("enter");
+    if(selectedMenu == 2){  // When Settings Menu selected
+      switch (sc){ // switch case where cursor is
       case 1: // Cursor position 1 
         e1++;
         if (e1 == 2){e1 = 0;}
@@ -439,13 +463,33 @@ void loop() {
         if (e2 == 2){e2= 0;}
       break;
     }
+    }
+    if(selectedMenu == 0){  // When in send Menu
+    Serial.print("send");
+      switch (cursor)
+      {
+      case 1:
+        Serial2.println(msg1);
+        break;
+      case 2:
+        Serial2.println(msg2);
+        break;	
+      case 3:
+        Serial2.println(msg3);
+        break;
+      default:
+        break;
+      }
+    }
+    
+    
 
   }
 
 // MENU HANDLING 
 
   if(selectedMenu == 0){
-    sendpage(0);
+    sendpage(cursor);
   }
   if(selectedMenu == 1){
     // MAIN PAGE
