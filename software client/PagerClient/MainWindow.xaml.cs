@@ -59,15 +59,15 @@ namespace PagerClient
 
                 if (item.Tag != null && item.Tag.Equals("MainItem"))
                 {
-                    newpage.displayMainPage(contentGrid, mainGrid, MainPagerWindow);
+                    newpage.displayMainPage(contentCanvas);
                 }
                 if (item.Tag != null && item.Tag.Equals("Settings"))
                 {
-                    newpage.displaySettingsPage(contentGrid, mainGrid);
+                    newpage.displaySettingsPage(contentCanvas);
                 }
                 if (item.Tag != null && item.Tag.Equals("connectpager"))
                 {
-                    newpage.displayConnectionPage(contentGrid, mainGrid, MainPagerWindow);
+                    newpage.displayConnectionPage(contentCanvas);
                 }
 
             }

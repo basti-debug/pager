@@ -5,10 +5,14 @@ using Microsoft.UI.Xaml.Shapes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Media.Capture;
 using Windows.Storage;
+using Windows.UI;
+using InTheHand.Net.Sockets;
 
 namespace PagerClient
 {
@@ -30,38 +34,57 @@ namespace PagerClient
         private Canvas usedcanvas = null;
         private Window usedwindow = null;
         private NavigationView nvham = null;
+
+        private SolidColorBrush accent = new SolidColorBrush((Windows.UI.Color)Application.Current.Resources["SystemAccentColor"]);
+
         #endregion
-        
-        public void displayMainPage(Frame currentframe, Grid grid, Window window)
+
+        public void displayMainPage(Canvas currentframe)
         {
-            usedwindow = window;
-            usedcurrentframe = currentframe;
-
-
-            aGrid = grid;
+            currentframe.Children.Clear();
 
             TextBlock Title = new TextBlock();
-            Title.Text = "Welcome to LTGarlic";
+            Title.Text = "Pager Client";
             Title.FontSize = 30;
 
             TextBlock info1 = new TextBlock();
-            info1.Text = "Version 2.6";
+            info1.Text = "Version 1";
             info1.FontSize = 15;
+
+            TextBlock lstmsg = new TextBlock();
+            lstmsg.Text = "Last Message: ";
+            lstmsg.FontSize = 15;
+
+
+            ListView msglist = new ListView();
+            
+            //msglist.Background = accent;
+
+            msglist.Items.Add("Message 1");
+            msglist.Items.Add("Message 2");
+            msglist.Width = 500;
+
+            Canvas.SetLeft(msglist, 50);
+            Canvas.SetTop(msglist, 150);
+
+            currentframe.Children.Add(msglist);
+
 
             // Moving Objects inside the Canvas
             Canvas.SetLeft(Title, 50);
-            Canvas.SetTop(Title, 100);
+            Canvas.SetTop(Title, 50);
 
             Canvas.SetLeft(info1, 50);
-            Canvas.SetTop(info1, 150);
+            Canvas.SetTop(info1, 100);
 
-            grid.Children.Add(Title);
-            grid.Children.Add(info1);
+            currentframe.Children.Add(Title);
+            currentframe.Children.Add(info1);
 
         }
 
-        public void displaySettingsPage(Frame currentframe, Grid grid)
+        public void displaySettingsPage(Canvas canva)
         {
+            canva.Children.Clear();
             TextBlock Title = new TextBlock();
             Title.Text = "Settings";
             Title.FontSize = 30;
@@ -69,11 +92,12 @@ namespace PagerClient
             Canvas.SetLeft(Title, 50);
             Canvas.SetTop(Title, 100);
 
-            grid.Children.Add(Title);
+            canva.Children.Add(Title);
         }
 
-        public void displayConnectionPage(Frame currentframe, Grid grid, Window window)
+        public void displayConnectionPage(Canvas canva)
         {
+            canva.Children.Clear();
             TextBlock Title = new TextBlock();
             Title.Text = "Connection Page";
             Title.FontSize = 30;
@@ -81,22 +105,31 @@ namespace PagerClient
             Canvas.SetLeft(Title, 50);
             Canvas.SetTop(Title, 100);
 
-            grid.Children.Add(Title);
+            canva.Children.Add(Title);
 
             ListView list = new ListView();
-            list.Width = 50;
-            list.Height = 100;
+            list.Width = 200;
+            list.Height = 500;
             list.SelectedIndex = 0;
 
-            var items = new[]
+            Canvas.SetLeft(list, 50);
+            Canvas.SetTop(list, 150);
+
+            // add bluetooth devices to list
+
+
+
+            
+            List<string> nearby = BLEhandler.nearbyBLE();   
+            foreach (var item in nearby)
             {
-                "Pager 1 ",
-                "Pager 2"
-            };
+                list.Items.Add(item);
+            }
+            
+            canva.Children.Add(list);
 
-            list.Items.Add(items);
 
-            grid.Children.Add(list);
+            
         }
     }
 }

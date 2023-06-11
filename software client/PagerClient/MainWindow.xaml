@@ -36,8 +36,7 @@
                 <NavigationViewItem Icon="Edit" Content="Change Messages" Tag="chmsg" />
                 <NavigationViewItem Icon="MapDrive" Content="Connect to Pager" Tag="connectpager"/>
             </NavigationView.MenuItems>
-            <Frame x:Name="contentGrid">
-            </Frame>
+            <Canvas x:Name="contentCanvas"/>
         </NavigationView>
 
 
