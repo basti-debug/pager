@@ -17,10 +17,16 @@
 * send menu 
 * basic sending possible
 
+* v5 
+* fixed send menu 
+* added Led support
+
 */
 
 
 // needed Dependencys
+
+#pragma region Dependencys
 
 #include <Wire.h> // IIC 
 // Screen
@@ -33,8 +39,9 @@
 
 #include "Arduino.h"
 
+#pragma endregion
 
-
+#pragma region Macros
 // Screen Address
 #define i2c_address 0x3c
 
@@ -54,11 +61,19 @@ Adafruit_SH1106G display = Adafruit_SH1106G(screen_width, screen_height, &Wire, 
 #define RETURN_PIN 26 
 #define POWER_PIN 33
 
+#define bleLED 4
+#define notifyLED 12
+#define batterylowLED 12
+
 #define NUMFLAKES 10
 #define XPOS 0
 #define YPOS 1
 #define DELTAY 2
 #define MAX_DATA_LENGTH 60
+
+#pragma endregion
+
+#pragma region Global Variables
 
 char receivedData[MAX_DATA_LENGTH];
 int dataIndex = 0;
@@ -75,6 +90,9 @@ char res = '%'; // if this is send over the Serial2 connection the current messa
 // end of message macro 
 char end = ';';
 
+// Alert Message Macro 
+char alertmacro = '|';
+
 // bluetooth macro
 char blmacro = '$';
 bool bllora;
@@ -89,6 +107,10 @@ char btdata;
 char btMAdata; // macro alert buffer
 
 
+// MELODY FOR NOTIFICATION
+
+int melody[] = {200,200,100,500,500,100,500,200};
+int durations[] = {100, 100, 100, 100, 100, 100, 100, 100};
 
 
 
@@ -111,7 +133,7 @@ bool bread;
 // Variables needed for settings menu selection
 int sc = 1; // cycle
 int maxsc = 2;// Number of Entrys ! change if more entrys added ! 
-int masxcursor = 3; // Number of Entrys send menu ! change if more entrys in the menu added !
+int masxcursor = 4; // Number of Entrys send menu ! change if more entrys in the menu added !
 
 
 int e1 = 0;
@@ -121,13 +143,14 @@ int e3 = 0;
 int cursor = 1;
 
 // Messages 
-char* msg1 = "Ahoi";
-char* msg2 = "Hello";
-char* msg3 = "Im ok";
+String msg1 = "Ahoi";
+String msg2 = "Hello";
+String msg3 = "Im ok";
 
 
 BluetoothSerial SerialBT;
 
+#pragma endregion
 
 // Functions 
 
@@ -144,12 +167,12 @@ void Snotifcation(){
     }
 }
 
-void sendDataLORA(char data){ // send Data over LORA
+void sendDataLORA(String data){ // send Data over LORA
   Serial2.print(data);
 }
 
 void rdLORA(){
-    digitalWrite(32,HIGH); // Traffic LED for testing 
+    digitalWrite(batterylowLED,HIGH); // Traffic LED for testing 
     data = Serial2.read(); 
     
     if (dataIndex < MAX_DATA_LENGTH ) {
@@ -157,7 +180,7 @@ void rdLORA(){
       dataIndex++;
     } 
     
-    digitalWrite(32,LOW);
+    digitalWrite(batterylowLED,LOW);
 }
 
 void rdBluetooth(){
@@ -177,19 +200,32 @@ void overloaddata(){
       }
       dataIndex = 0;
       bread = false;
+      digitalWrite(notifyLED,LOW);
       data = 0;
       delay(10);
     }
 }
 
+void handleAlerts(){
+  if (data == alertmacro){
+    digitalWrite(notifyLED,HIGH);
+    for (int i = 0; i < sizeof(melody)/sizeof(int); i++) {
+    tone(BUZZER_PIN, melody[i]);
+    delay(durations[i]);
+    noTone(BUZZER_PIN);
+    delay(100);
+  }
+  }
+}
+
 void receive(){    // handling incomming data from the module and writing to the receivedData variable
+overloaddata();
   if (Serial2.available()) { // LORA receive
     rdLORA();
-    overloaddata();    
+    handleAlerts();
   }
   if (bllora == true){    // Bluetooth receive 
-    rdBluetooth();
-    overloaddata();   
+    rdBluetooth();  
   }
 }
 
@@ -232,6 +268,9 @@ void sendpage(int cursor){
   display.println(msg1);
   display.println(msg2);
   display.println(msg3);
+  display.setTextColor(SH110X_BLACK, SH110X_WHITE);
+  display.println("ALERT");
+  display.setTextColor(SH110X_WHITE,SH110X_BLACK);
 
   if(cursor==1){
     //first message 
@@ -244,6 +283,9 @@ void sendpage(int cursor){
     display.print("send");
     //third entry, thrid msg
     display.setCursor(100,48);
+    display.print("send");
+    //fourth entry
+    display.setCursor(100,56);
     display.print("send");
   } 
 
@@ -259,6 +301,9 @@ void sendpage(int cursor){
     display.setTextColor(SH110X_WHITE,SH110X_BLACK);
     display.setCursor(100,48);
     display.print("send");
+    //fourth entry
+    display.setCursor(100,56);
+    display.print("send");
   }
 
   if (cursor == 3){
@@ -271,6 +316,25 @@ void sendpage(int cursor){
     //third entry, thrid msg
     display.setTextColor(SH110X_BLACK, SH110X_WHITE); 
     display.setCursor(100,48);
+    display.print("send");
+    display.setTextColor(SH110X_WHITE,SH110X_BLACK);
+    //fourth entry
+    display.setCursor(100,56);
+    display.print("send");
+  }
+  if (cursor == 4){
+     //first message 
+    display.setCursor(100, 32);
+    display.print("send");
+    //second entry, second msg
+    display.setCursor(100,40);
+    display.print("send");
+    //third entry, thrid msg
+    display.setCursor(100,48);
+    display.print("send");
+    //fourth entry
+    display.setTextColor(SH110X_BLACK, SH110X_WHITE); 
+    display.setCursor(100,56);
     display.print("send");
     display.setTextColor(SH110X_WHITE,SH110X_BLACK);
   }
@@ -360,15 +424,19 @@ void menupage(int e1, int e2, int e3, int sc){
   }
   if(blstatus == 1)
   {
-    display.setCursor(100,64);
+    display.setCursor(90,50);
     display.print("connected");
   }
   if(blstatus == 2)
   {
-    display.setCursor(100,64);
+    display.setCursor(90,50);
     display.print("open");
   }
-
+  if(blstatus == 3)
+  {
+    display.setCursor(90,50);
+    display.print("closed");
+  }
   display.display();
 }
 
@@ -389,8 +457,10 @@ void setup() {
   pinMode(RETURN_PIN, INPUT_PULLUP); // Return Button
   pinMode(POWER_PIN, INPUT_PULLUP); // Top Button
 
-  pinMode(32,OUTPUT); //LED
-  pinMode(18,OUTPUT); //Buzzer
+  pinMode(bleLED,OUTPUT); //Bluetooth LED
+  pinMode(notifyLED, OUTPUT); // Notification LED 
+  pinMode(batterylowLED,OUTPUT); // ERROR / Battery LED
+  pinMode(BUZZER_PIN,OUTPUT); //Buzzer
 
 
   Serial.begin(9600); // Start Serial intern / only TESTING
@@ -407,33 +477,28 @@ void setup() {
 
 void loop() {
 
-  receive();
+  receive(); // This Function Handles all the incomming Data, also place of message manipluation
   
+ 
+  // BUTTON Handling
 
-  // vars of the button states
-  int rightstate = digitalRead(RIGHT_PIN);
-  int leftstate = digitalRead(LEFT_PIN);
-  int enterstate = digitalRead(ENTER_PIN);
-  int returnstate = digitalRead(RETURN_PIN);
-  int topstate = digitalRead(POWER_PIN);
-  
-// BUTTON Handling
-
-  if(topstate == LOW){  // Bread Button so when pressed notification deleted 
+  if(digitalRead(POWER_PIN) == LOW){  // Bread Button so when pressed notification deleted 
     bread = true;
   }
 
-  if (rightstate == LOW) {  // Scroll Right
+  if (digitalRead(RIGHT_PIN) == LOW) {  // Scroll Right
     if(selectedMenu >2){}
     else{selectedMenu++;}
   }
 
-  if(leftstate == LOW){   // Scroll Left
+  if(digitalRead(LEFT_PIN) == LOW){   // Scroll Left
     if(selectedMenu < 0){}
     else{selectedMenu--;}
   }
 
-  if(returnstate == LOW){ // Cycle through the Settings options
+#pragma region Cycle Button pressed Event
+
+  if(digitalRead(RETURN_PIN) == LOW){ // Cycle through the Settings options
     if(selectedMenu == 2){  // When Settings Menu selected
       sc++;
     }
@@ -450,8 +515,12 @@ void loop() {
     }
     delay(25);
   }
-  if(enterstate == LOW){ // Event when enter is pressed - so setting is changed 
-    Serial.print("enter");
+#pragma endregion
+
+  // EVENT ENTER
+#pragma region ENTER Pressed
+  // Event when enter is pressed - so setting is changed 
+  if(digitalRead(ENTER_PIN) == LOW){ 
     if(selectedMenu == 2){  // When Settings Menu selected
       switch (sc){ // switch case where cursor is
       case 1: // Cursor position 1 
@@ -466,16 +535,20 @@ void loop() {
     }
     if(selectedMenu == 0){  // When in send Menu
     Serial.print("send");
+    Serial.print(cursor);
       switch (cursor)
       {
       case 1:
-        Serial2.println(msg1);
+        sendDataLORA(msg1);
         break;
       case 2:
-        Serial2.println(msg2);
+        sendDataLORA(msg2);
         break;	
       case 3:
-        Serial2.println(msg3);
+        sendDataLORA(msg3);
+        break;
+      case 4: 
+        sendDataLORA(String(alertmacro));
         break;
       default:
         break;
@@ -485,9 +558,9 @@ void loop() {
     
 
   }
-
+#pragma endregion
 // MENU HANDLING 
-
+#pragma region Menu Area when which Menu is selected which action should be taken
   if(selectedMenu == 0){
     sendpage(cursor);
   }
@@ -511,14 +584,23 @@ void loop() {
     Serial.println("Bluetooth to LORA activate");
     bllora = true;
   }
+#pragma endregion
 
+#pragma region Bluetooth Handling ON OFF
 // BLUETOOTH STATE HANDLER
 
   if(e1 == 1){ // Bluetooth ON
     SerialBT.begin(blname); // Start Bluetooth service
+    digitalWrite(bleLED, HIGH);
+    blstatus = 2; 
   }
   if(e1 == 0){ // Bluetooth off
     SerialBT.end();
+    digitalWrite(bleLED, LOW);
+    blstatus = 3;
   }
+
+#pragma endregion
+
   delay(100);
 }

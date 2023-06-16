@@ -1,28 +1,26 @@
-﻿using System;
+﻿using InTheHand.Net.Sockets;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using InTheHand.Net;
-using InTheHand.Net.Bluetooth;
-using InTheHand.Net.Sockets;
 
 namespace PagerClient
 {
     public class BLEhandler
     {
-        public static List<string> nearbyBLE()
+        public static List<string> nearbyBluetooth()
         {
-            List<string> nearby = new List<string>();
             BluetoothClient client = new BluetoothClient();
-            BluetoothDeviceInfo[] devices = client.DiscoverDevices();
+            List<string> items = new List<string>();
+           /* BluetoothDeviceInfo[] devices = client.DiscoverDevicesInRange();
             foreach (BluetoothDeviceInfo d in devices)
             {
-                nearby.Add(d.DeviceName);
-            }
-            return nearby;
+                items.Add(d.DeviceName);
+            }*/
+            return items;
         }
-
+        /*
         public void sendoverBLE(string msg)
         {
               BluetoothClient client = new BluetoothClient();
@@ -42,7 +40,7 @@ namespace PagerClient
                     bc.Close();
                 }
             }
-        }
+        }+/
 
         /*
         public string HandleBLErecive(int port)

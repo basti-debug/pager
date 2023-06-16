@@ -28,13 +28,6 @@ namespace PagerClient
         // Theme
 
         public static string theme = "Default";
-
-        // for UI navigation
-        private Frame usedcurrentframe = null;
-        private Canvas usedcanvas = null;
-        private Window usedwindow = null;
-        private NavigationView nvham = null;
-
         private SolidColorBrush accent = new SolidColorBrush((Windows.UI.Color)Application.Current.Resources["SystemAccentColor"]);
 
         #endregion
@@ -120,7 +113,7 @@ namespace PagerClient
 
 
             
-            List<string> nearby = BLEhandler.nearbyBLE();   
+            List<string> nearby = BLEhandler.nearbyBluetooth();   
             foreach (var item in nearby)
             {
                 list.Items.Add(item);
