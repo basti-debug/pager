@@ -13,6 +13,8 @@ using Windows.Media.Capture;
 using Windows.Storage;
 using Windows.UI;
 using InTheHand.Net.Sockets;
+using System.Collections.ObjectModel;
+using Windows.Devices.Enumeration;
 
 namespace PagerClient
 {
@@ -100,29 +102,58 @@ namespace PagerClient
 
             canva.Children.Add(Title);
 
+            TextBlock infotop = new TextBlock();
+            infotop.Text = "Select a device to connect to";
+            infotop.FontSize = 15;
+            
+            Canvas.SetLeft(infotop, 50);
+            Canvas.SetTop(infotop, 150);
+
+            canva.Children.Add(infotop);
+            #region list handling
             ListView list = new ListView();
             list.Width = 200;
             list.Height = 500;
             list.SelectedIndex = 0;
 
             Canvas.SetLeft(list, 50);
-            Canvas.SetTop(list, 150);
+            Canvas.SetTop(list, 200);
 
             // add bluetooth devices to list
+            List<string> deviceNames = BLEhandler.nearbyBluetootDevices();
 
 
-
-            
-            List<string> nearby = BLEhandler.nearbyBluetooth();   
-            foreach (var item in nearby)
+            foreach (string name in deviceNames)
             {
-                list.Items.Add(item);
+                list.Items.Add(name);
             }
             
             canva.Children.Add(list);
 
 
-            
+            if (deviceNames.Count == 0)
+            {
+                TextBlock noDevices = new TextBlock();
+                noDevices.Text = "No devices found";
+                noDevices.FontSize = 15;
+
+                Canvas.SetLeft(noDevices, 50);
+                Canvas.SetTop(noDevices, 200);
+                canva.Children.Add(noDevices);
+            }
+            #endregion
+
+
+            #region buttons
+            Button connectbbutton = new Button();
+            connectbbutton.Content = "Connect";
+            connectbbutton.Style = (Style)Application.Current.Resources["ButtonRevealStyle"];
+            Canvas.SetLeft(connectbbutton, 50);
+            Canvas.SetTop(connectbbutton, 500);
+
+            canva.Children.Add(connectbbutton);
+            #endregion
+
         }
     }
 }

@@ -47,7 +47,9 @@ namespace PagerClient
             TrySetMicaBackdrop();
             MainPagerWindow.ExtendsContentIntoTitleBar = true;  // enable custom titlebar
             MainPagerWindow.SetTitleBar(PagerAppTitleBar);      // set user ui element as titlebar
-
+            
+            newpage.displayMainPage(contentCanvas);
+            
             nvHamburgerleft.SelectionChanged += NvSample_SelectionChanged;
 
             #region switch pages 
