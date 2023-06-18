@@ -21,6 +21,9 @@
 * fixed send menu 
 * added Led support
 
+* v6
+* bluetooth handling added
+
 */
 
 
@@ -97,6 +100,8 @@ char alertmacro = '|';
 char blmacro = '$';
 bool bllora;
 
+char blloopmacro = '~';
+bool blloop; 
 // BUFFERS
 
 // Input LORA Data Buffer
@@ -106,6 +111,11 @@ char data;
 char btdata;
 char btMAdata; // macro alert buffer
 
+// Bluetooth forwording buffer
+char rrDBuffer[MAX_DATA_LENGTH]; 
+
+// Variable which helps that messages are not send everytime over the Bluetooth line
+int comp;
 
 // MELODY FOR NOTIFICATION
 
@@ -192,11 +202,23 @@ void rdBluetooth(){
       btdataIndex++;
     } 
 }
+
+void blloopfunction(){
+  comp = memcmp(rrDBuffer,receivedData,sizeof(rrDBuffer));
+  if (comp != 0)
+  {
+    SerialBT.println(receivedData);
+    strcpy(rrDBuffer, receivedData);
+  }
+}
 void overloaddata(){
     if (dataIndex > MAX_DATA_LENGTH || btdataIndex > MAX_DATA_LENGTH || bread == true || data == res || btdata == res) {
       Serial.println("buffer cleared");
       for (int i = 0; i < MAX_DATA_LENGTH; i++) {
         receivedData[i] = 0;
+      }
+      for(int i = 0; i < MAX_DATA_LENGTH; i++){
+        rrDBuffer[i]=0;
       }
       dataIndex = 0;
       bread = false;
@@ -219,13 +241,16 @@ void handleAlerts(){
 }
 
 void receive(){    // handling incomming data from the module and writing to the receivedData variable
-overloaddata();
+  overloaddata();
   if (Serial2.available()) { // LORA receive
     rdLORA();
     handleAlerts();
   }
   if (bllora == true){    // Bluetooth receive 
     rdBluetooth();  
+  }
+  if(blloop == true){
+    blloopfunction();
   }
 }
 
@@ -235,14 +260,14 @@ overloaddata();
 void mainpage(bool read){
   display.clearDisplay();
 
-// Heading
+  // Heading
 
   display.setTextSize(1); 
   display.setTextColor(SH110X_WHITE); 
   display.setCursor(0,0);
   display.println("home page");
   display.println("");
-// Info  
+  // Info  
   display.println("Last Message:");
   display.println("");
   
@@ -583,6 +608,11 @@ void loop() {
   if(btMAdata == blmacro){
     Serial.println("Bluetooth to LORA activate");
     bllora = true;
+  }
+
+  if(btMAdata == blloopmacro){
+    //Serial.println("Internal Bluetooth Forwording from LORA to Bluetooth active");
+    blloop = true;
   }
 #pragma endregion
 

@@ -15,6 +15,7 @@ using Windows.UI;
 using InTheHand.Net.Sockets;
 using System.Collections.ObjectModel;
 using Windows.Devices.Enumeration;
+using System.Security.Cryptography.X509Certificates;
 
 namespace PagerClient
 {
@@ -24,8 +25,9 @@ namespace PagerClient
 
         // standard grid 
         Grid aGrid = new Grid();
-        
 
+
+        ListView deviceslist = new ListView();
 
         // Theme
 
@@ -33,6 +35,12 @@ namespace PagerClient
         private SolidColorBrush accent = new SolidColorBrush((Windows.UI.Color)Application.Current.Resources["SystemAccentColor"]);
 
         #endregion
+
+
+        public void displayChangeSettings(Canvas canva)
+        {
+
+        }
 
         public void displayMainPage(Canvas currentframe)
         {
@@ -47,16 +55,14 @@ namespace PagerClient
             info1.FontSize = 15;
 
             TextBlock lstmsg = new TextBlock();
-            lstmsg.Text = "Last Message: ";
+            lstmsg.Text = "Messages: ";
             lstmsg.FontSize = 15;
+
 
 
             ListView msglist = new ListView();
             
-            //msglist.Background = accent;
-
-            msglist.Items.Add("Message 1");
-            msglist.Items.Add("Message 2");
+            
             msglist.Width = 500;
 
             Canvas.SetLeft(msglist, 50);
@@ -64,6 +70,16 @@ namespace PagerClient
 
             currentframe.Children.Add(msglist);
 
+            if(msglist.Items.Count == 0)
+            {
+                TextBlock noMessages = new TextBlock();
+                noMessages.Text = "No messages found, you may need to firstly connect to a pager";
+                noMessages.FontSize = 15;
+
+                Canvas.SetLeft(noMessages, 50);
+                Canvas.SetTop(noMessages, 180);
+                currentframe.Children.Add(noMessages);
+            }
 
             // Moving Objects inside the Canvas
             Canvas.SetLeft(Title, 50);
@@ -72,9 +88,15 @@ namespace PagerClient
             Canvas.SetLeft(info1, 50);
             Canvas.SetTop(info1, 100);
 
+            Canvas.SetLeft(lstmsg, 50);
+            Canvas.SetTop(lstmsg, 125);
+
+            // Adding Objects to the Canvas
+
+            
             currentframe.Children.Add(Title);
             currentframe.Children.Add(info1);
-
+            currentframe.Children.Add(lstmsg);
         }
 
         public void displaySettingsPage(Canvas canva)
@@ -89,6 +111,12 @@ namespace PagerClient
 
             canva.Children.Add(Title);
         }
+
+        public void connectbuttonclick(object sender, RoutedEventArgs e) 
+        {
+            BLEhandler.selectionListViewBle(deviceslist, e);
+        }
+
 
         public void displayConnectionPage(Canvas canva)
         {
@@ -111,13 +139,13 @@ namespace PagerClient
 
             canva.Children.Add(infotop);
             #region list handling
-            ListView list = new ListView();
-            list.Width = 200;
-            list.Height = 500;
-            list.SelectedIndex = 0;
+            deviceslist.Width = 200;
+            deviceslist.Height = 500;
+            deviceslist.SelectedIndex = 0;
+            
 
-            Canvas.SetLeft(list, 50);
-            Canvas.SetTop(list, 200);
+            Canvas.SetLeft(deviceslist, 50);
+            Canvas.SetTop(deviceslist, 200);
 
             // add bluetooth devices to list
             List<string> deviceNames = BLEhandler.nearbyBluetootDevices();
@@ -125,10 +153,10 @@ namespace PagerClient
 
             foreach (string name in deviceNames)
             {
-                list.Items.Add(name);
+                deviceslist.Items.Add(name);
             }
             
-            canva.Children.Add(list);
+            canva.Children.Add(deviceslist);
 
 
             if (deviceNames.Count == 0)
@@ -148,12 +176,18 @@ namespace PagerClient
             Button connectbbutton = new Button();
             connectbbutton.Content = "Connect";
             connectbbutton.Style = (Style)Application.Current.Resources["ButtonRevealStyle"];
+            connectbbutton.Click += connectbuttonclick;
+
             Canvas.SetLeft(connectbbutton, 50);
             Canvas.SetTop(connectbbutton, 500);
 
             canva.Children.Add(connectbbutton);
             #endregion
 
+
         }
+
+        
     }
 }
+    
